@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Run the Rust application with the current AWS_PROFILE and all passed arguments
+AWS_PROFILE="$AWS_PROFILE" _raph_bin "$@"
+rt=$?
+
+if [ $rt -eq 1 ]; then
+    selected_profile="$(cat ~/.raph)"
+
+    if [ -z "$selected_profile" ]; then
+        unset AWS_PROFILE
+    else
+        export AWS_PROFILE="$selected_profile"
+    fi
+
+    exit 0
+fi
+
+exit $rt
