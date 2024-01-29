@@ -20,9 +20,9 @@
 				}
 			},
 			// "args": ["logr-sysadmin", "-n", "'echo hi'"],
-			"args": ["logr-sysadmin", "-n", "\"echo hi\""],
+			// "args": ["logr-sysadmin", "-n", "\"echo hi\""],
 			// "args": ["default"],
-			// "args": [],
+			"args": [],
 			"cwd": "${workspaceFolder}"
 		},
 		{
