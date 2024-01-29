@@ -12,8 +12,8 @@ use std::process::{Command as SystemCommand, exit};
 use std::io::stdout;
 use crossterm::{cursor, terminal, QueueableCommand};
 
-#[tokio::main]
-async fn main() {
+
+fn main() {
     let matches = Command::new("raph")
     .about("🦀 AWS Profile Handler and Executor")
     .version(crate_version!())
