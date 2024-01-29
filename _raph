@@ -12,8 +12,4 @@ if [ $rt -eq 1 ]; then
     else
         export AWS_PROFILE="$selected_profile"
     fi
-
-    exit 0
 fi
-
-exit $rt

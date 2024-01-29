@@ -1,3 +1,5 @@
+use crossterm::style::Stylize;
+use crossterm::terminal::ClearType;
 use dialoguer::{theme::ColorfulTheme, Select};
 use std::env;
 use std::fs::{read_to_string, write};
@@ -6,6 +8,9 @@ use regex::Regex;
 
 use clap::{crate_version, Arg, Command};
 use std::process::{Command as SystemCommand, exit};
+
+use std::io::stdout;
+use crossterm::{cursor, terminal, QueueableCommand};
 
 #[tokio::main]
 async fn main() {
@@ -64,16 +69,28 @@ async fn main() {
                 Err(_) => "default".into(),
             };
 
-            match prompt_profile_choice(&home_dir, &default_profile_choice) {
-                Ok(profile) => {
-                    match write_to_config(&home_dir, &profile) {
-                        Ok(_) => {},
-                        Err(err) => eprintln!("Error: {}", err),
-                    }
+            let profile = match prompt_profile_choice(&home_dir, &default_profile_choice) {
+                Ok(profile) => profile,
+                Err(err) => {
+                    eprintln!("🦀 Error: {}", err);
+                    exit(5);
                 },
-                Err(err) => eprintln!("Error: {}", err),
+            };
+
+            match write_to_config(&home_dir, &profile) {
+                Ok(_) => {},
+                Err(err) => {
+                    eprintln!("🦀 Error: {}", err);
+                    exit(6);
+                },
             }
             
+            let _ = stdout()
+                .queue(cursor::MoveUp(2)).unwrap()
+                .queue(terminal::Clear(ClearType::CurrentLine)).unwrap();
+            
+            println!("🦀 AWS profile: {}", profile.green().bold());
+
             exit(1);  // Exit with code 1 for profile switch
         },
     }
