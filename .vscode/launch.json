@@ -11,19 +11,18 @@
 			"cargo": {
 				"args": [
 					"build",
-					"--bin=_raph",
+					"--bin=_raph_bin",
 					"--package=raph"
 				],
 				"filter": {
-					"name": "_raph",
+					"name": "_raph_bin",
 					"kind": "bin"
 				}
 			},
-			// "args": ["logr-sysadmin", "sso", "login"],
-			// "args": ["enabled-CodeArtifactDeveloper", "sso", "login"],
-			// "args": ["enabled-CodeArtifactDeveloper", "aws", "sso", "login"],
+			// "args": ["logr-sysadmin", "-n", "'echo hi'"],
+			"args": ["logr-sysadmin", "-n", "\"echo hi\""],
 			// "args": ["default"],
-			"args": [],
+			// "args": [],
 			"cwd": "${workspaceFolder}"
 		},
 		{
@@ -34,11 +33,11 @@
 				"args": [
 					"test",
 					"--no-run",
-					"--bin=_raph",
+					"--bin=_raph_bin",
 					"--package=raph"
 				],
 				"filter": {
-					"name": "_raph",
+					"name": "_raph_bin",
 					"kind": "bin"
 				}
 			},

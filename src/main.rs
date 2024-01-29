@@ -23,10 +23,17 @@ async fn main() {
         .required(false)
         .index(1))
     .arg(Arg::new("command")
-        .help("An 'aws' command to execute with the specified AWS profile, without affecting the current shell's environment")
+        .help("A command to execute with the specified AWS profile, without affecting the current shell's environment")
         .required(false)
         .index(2)
-        .num_args(1..))
+        .num_args(1..)
+        .trailing_var_arg(true))
+    .arg(Arg::new("no-auto-prefix")
+        .long("no-auto-prefix")
+        .short('n')
+        .help("Disables automatic prefixing of the 'aws' command")
+        .action(clap::ArgAction::SetTrue)
+        .required(false))
     .get_matches();
 
     let home_dir = env::var("HOME").expect("HOME not set");
@@ -43,7 +50,7 @@ async fn main() {
                     let command_args = matches.get_many::<String>("command")
                         .expect("Error parsing aws command")
                         .collect::<Vec<&String>>();
-                    execute_command_with_profile(profile, &command_args);
+                    execute_command_with_profile(profile, &command_args, matches.get_flag("no-auto-prefix"));
                     exit(0);  // Exit with code 0 after running a command because no shell profile switch required
                 },
                 false => {
@@ -138,21 +145,30 @@ fn prompt_profile_choice(home_dir: &str, default_profile_choice: &str) -> Result
     Ok(profiles.get(selection).expect("selection is in profile list").to_string())
 }
 
-fn execute_command_with_profile(profile: &str, command_args: &Vec<&String>) {
+fn execute_command_with_profile(profile: &str, command_args: &Vec<&String>, no_auto_prefix: bool) {
     // let mut command = command_args.concat();
 
     let mut command_args = command_args.clone();
 
     let prefix = "aws".to_string();
-    if command_args.first().expect("command args should be >=1") != &"aws" {
+    if command_args.first().expect("command args should be >=1") != &"aws" && !no_auto_prefix {
         command_args.insert(0, &prefix);
     }
 
-    // temp override command_args to ["echo", "$AWS_PROFILE"]
-
-    let echo = "echo".to_string();
-    let aws_profile = "$AWS_PROFILE".to_string();
-    command_args = vec![&echo, &aws_profile];
+    let command_args: Vec<&str> = if command_args.len() == 1 {
+        let line = if command_args[0].starts_with("'") && command_args[0].ends_with("'") {
+            command_args[0].strip_prefix("'").unwrap().strip_suffix("'").unwrap()
+        }
+        else if command_args[0].starts_with("\"") && command_args[0].ends_with("\"") {
+            command_args[0].strip_prefix("\"").unwrap().strip_suffix("\"").unwrap()
+        }
+        else {
+            command_args[0]
+        };
+        line.split(" ").collect::<Vec<&str>>()
+    } else {
+        command_args.iter().map(|s| s.as_str()).collect::<Vec<&str>>()
+    };
 
     let mut command = SystemCommand::new(&command_args[0]);
     command
@@ -161,7 +177,7 @@ fn execute_command_with_profile(profile: &str, command_args: &Vec<&String>) {
     match command.spawn() {
         Ok(mut child) => {
             match child.wait() {
-                Ok(status) => println!("Command exited with status: {}", status),
+                Ok(status) => println!("{}", status),
                 Err(e) => eprintln!("Failed to wait for command: {}", e),
             }
         }

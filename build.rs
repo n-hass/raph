@@ -12,7 +12,7 @@ fn main() -> io::Result<()> {
 
     // Copy the script to .cargo/bin
     if cargo_bin_path.exists() && raph_script_path.exists() {
-        println!("cargo:warning=Copying _raph to {}", cargo_bin_path.display());
+        println!("cargo:warning=Copying the '_raph' wrapper script to {}", cargo_bin_path.display());
         fs::copy(&raph_script_path, cargo_bin_path.join("_raph"))?;
     }
     
