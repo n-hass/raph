@@ -55,7 +55,7 @@ fn main() {
                 },
                 false => {
                     match write_to_config(&home_dir, profile) {
-                        Ok(_) => println!("🦀 Profile switched to {}", profile),
+                        Ok(_) => println!("🦀 Profile switched to {}", profile.clone().green().bold()),
                         Err(err) => eprintln!("🦀 Error: {}", err),
                     }
                     exit(1);  // Exit with code 1 for profile switch
@@ -96,7 +96,7 @@ fn main() {
                 .queue(cursor::MoveUp(2)).unwrap()
                 .queue(terminal::Clear(ClearType::CurrentLine)).unwrap();
             
-            println!("🦀 AWS profile: {}", profile.green().bold());
+            println!("🦀 AWS profile: {}", profile.clone().green().bold());
 
             exit(1);  // Exit with code 1 for profile switch
         },

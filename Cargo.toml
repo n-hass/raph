@@ -1,12 +1,12 @@
 [package]
 name = "raph"
-version = "0.1.1"
-description = "AWS profile manager and executor"
+version = "0.1.2"
+description = "AWS Profile Handler and executor"
 homepage = "https://github.com/n-hass/raph"
 repository = "https://github.com/n-hass/raph"
 documentation = "https://github.com/n-hass/raph/blob/main/README.md"
 readme = "README.md"
-license = "MIT"
+license = "mit"
 edition = "2021"
 exclude = [
     ".github",
